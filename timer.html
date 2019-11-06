@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Unix Timestamper</title>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+            background: #F7F7F7;
+            font: 36px "Segoe UI";
+        }
+        body, html {
+            height: 100%;
+        }
+        input, .x {
+            font: 36px "Segoe UI Light";
+        }
+        .all {
+
+        }
+    </style>
+</head>
+<body>
+    <table height="100%" class="all" style="width: 1000px; margin: 0 auto;">
+        <tr>
+            <td valign="center">
+                <table width="100%">
+                    <tr>
+                        <td width="220">Timestamp:</td>
+                        <td><input type="text" autocomplete="off" name="timestamp" id="timestamp" value="" onkeyup="tChanged();" onchange="tChanged();" />
+                            <span style="font-size: 24px">
+                                <a href="#" onclick="z1D(); return false;">-1D</a>
+                                <a href="#" onclick="z2H(); return false;">-2H</a>
+                                <a href="#" onclick="xx0(); return false;" title="ESC">0</a>
+                                <a href="#" onclick="x2H(); return false;">+2H</a>
+                                <a href="#" onclick="x1D(); return false;">+1D</a>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Global Date:</td>
+                        <td><span class="x" id="global"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Local Date:</td>
+                        <td><span class="x" id="local"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Date Time:</td>
+                        <td><input type="text" autocomplete="off" name="date" id="datetime" value="" onkeyup="rChanged();" onchange="rChanged();"/></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+<script type="text/javascript">
+function tChanged()
+{
+    var t = +document.getElementById('timestamp').value;
+
+    var d = new Date(t * 1000);
+    showToString(d);
+
+    document.getElementById('datetime').value = d.getDate() + "." + dd(d.getMonth() + 1) + "." + d.getFullYear() + " " +
+                                                dd(d.getHours()) + ":" + dd(d.getMinutes()) + ':' + dd(d.getSeconds());
+}
+
+function showToString(d)
+{
+    document.getElementById('global').innerHTML = d.toUTCString();
+    document.getElementById('local').innerHTML = d.toString();
+}
+
+function rChanged()
+{
+    var raw = document.getElementById('datetime').value;
+    var rawA = raw.split(" ");
+    var dArray = rawA[0].split(".");
+    var tArray = rawA[1].split(":");
+
+    var res = new Date();
+    if (dArray[0]!=null) res.setDate(dArray[0]);
+    if (dArray[1]!=null) res.setMonth(dArray[1]-1);
+    if (dArray[2]!=null) res.setFullYear(dArray[2]);
+
+    if (tArray[0]!=null) res.setHours(tArray[0]);
+    if (tArray[1]!=null) res.setMinutes(tArray[1]);
+    if (tArray[2]!=null) res.setSeconds(tArray[2]);
+    else
+        res.setSeconds(0);
+
+    showToString(res);
+    document.getElementById('timestamp').value = Math.floor(res.getTime()/1000).toString();
+
+}
+function dd(v)
+{
+    if (v < 10)
+        v = "0" + v;
+    return v;
+}
+
+function z2H()
+{
+    document.getElementById('timestamp').value = +document.getElementById('timestamp').value - 2 * 3600;
+    tChanged();
+}
+
+function x2H()
+{
+    document.getElementById('timestamp').value = +document.getElementById('timestamp').value + 2 * 3600;
+    tChanged();
+}
+
+function x1D()
+{
+    document.getElementById('timestamp').value = +document.getElementById('timestamp').value + 24 * 3600;
+    tChanged();
+}
+
+function z1D()
+{
+    document.getElementById('timestamp').value = +document.getElementById('timestamp').value - 24 * 3600;
+    tChanged();
+}
+
+function xx0()
+{
+    document.getElementById('timestamp').value = Math.floor((new Date()).getTime() / 1000);
+    tChanged();
+}
+
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 27) {
+        document.getElementById('timestamp').value = Math.floor((new Date()).getTime() / 1000);
+        tChanged();
+    }
+};
+
+window.onload = function(){
+    document.getElementById('timestamp').value = Math.floor((new Date()).getTime() / 1000);
+    document.getElementById('timestamp').focus();
+    document.getElementById('timestamp').select();
+    tChanged();
+};
+</script>
+
+</body>
+</html>
